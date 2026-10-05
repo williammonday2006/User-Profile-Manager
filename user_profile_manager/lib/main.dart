@@ -27,7 +27,13 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: const Padding(
         padding: EdgeInsets.all(16.0),
-        child: UserBanner(),
+        child: Column(
+          children: [
+            UserBanner(),
+            SizedBox(height: 20),
+            ProfileForm(),
+          ],
+        ),
       ),
     );
   }
@@ -81,6 +87,64 @@ class _FavoriteButtonState extends State<FavoriteButton> {
           _isFavorited = !_isFavorited;
         });
       },
+    );
+  }
+}
+
+class ProfileForm extends StatefulWidget {
+  const ProfileForm({super.key});
+
+  @override
+  State<ProfileForm> createState() => _ProfileFormState();
+}
+
+class _ProfileFormState extends State<ProfileForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _usernameController,
+            decoration: const InputDecoration(
+              labelText: 'Username',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Username cannot be empty';
+              }
+
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Profile saved: ${_usernameController.text}',
+                    ),
+                  ),
+                );
+              }
+            },
+            child: const Text('Save Profile'),
+          ),
+        ],
+      ),
     );
   }
 }
